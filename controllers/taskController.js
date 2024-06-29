@@ -4,6 +4,14 @@ const Task = require("../models/taskModel");
 exports.createTask = async (req, res) => {
   const { title, description, status, dueDate } = req.body;
   try {
+    const taskCount = await Task.countDocuments();
+    if (taskCount >= 50) {
+      return res
+        .status(400)
+        .json({
+          message: "Task limit reached. Cannot create more than 50 tasks.",
+        });
+    }
     const newTask = new Task({ title, description, status, dueDate });
     await newTask.save();
     res.status(201).json(newTask);
